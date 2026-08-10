@@ -13,6 +13,12 @@ Linux, Android, and iOS**, with two tabs:
 - **Receive** — start the camera, point it at the sender's screen, and the file
   is decoded and saved to your **Downloads** folder (with a *Save As…* fallback).
 
+## Online Testing
+[Online Test](https://opfer.netlify.app/web/index.html)
+
+Online Send/Receive of Opfer support upto 30 fps only, use mobile version for 
+better speed.
+
 ## How it works
 
 The transfer uses **LT (Luby transform) fountain codes** so the one-way optical
