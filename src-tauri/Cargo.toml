@@ -1,0 +1,50 @@
+[package]
+name = "opfer"
+version = "0.1.0"
+description = "Fountain-coded optical file transfer (screen-to-camera QR)"
+authors = ["you"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
+name = "opfer_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# Native QR decode pipeline (shared by the Android camera2 path AND the desktop
+# nokhwa path). Pure-Rust ZXing port — no C++ toolchain — returning raw byte-mode
+# payloads, which our binary frames require.
+rxing = { version = "0.7", default-features = false }
+base64 = "0.22"
+log = "0.4"
+
+# Windows-only: auto-grant the WebView2 camera/mic permission so getUserMedia
+# never gets permanently stuck on a remembered "block". Pinned to the same
+# webview2-com wry already pulls in, so the COM types unify.
+[target.'cfg(windows)'.dependencies]
+webview2-com = "0.38"
+
+# Android-only: native camera2 capture (bypasses the WebView's 30 fps cap).
+[target.'cfg(target_os = "android")'.dependencies]
+# camera2 + AImageReader live in ndk-sys (raw FFI to libcamera2ndk / libmediandk).
+ndk-sys = "0.6"
+ndk-context = "0.1"
+android_logger = "0.14"
+
+# Desktop (non-Android): native camera capture via nokhwa (Media Foundation on
+# Windows / V4L2 on Linux / AVFoundation on macOS) → the same decode pipeline.
+[target.'cfg(not(target_os = "android"))'.dependencies]
+nokhwa = { version = "0.10", features = ["input-native"] }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- Shown in the OS camera-permission prompt on macOS and iOS. -->
+  <key>NSCameraUsageDescription</key>
+  <string>Opfer uses the camera to read the animated QR codes shown by the sending device and reconstruct the transferred file.</string>
+</dict>
+</plist>
