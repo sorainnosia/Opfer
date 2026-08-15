@@ -1,0 +1,31 @@
+{
+  "name": "opfer",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Fountain-coded optical file transfer (screen-to-camera QR) as a Tauri desktop + mobile app.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "build:web": "tsc && vite build --base=./ --outDir web --emptyOutDir && node scripts/inline-web.mjs",
+    "serve:web": "vite preview --outDir web --port 5173",
+    "preview": "vite preview",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-dialog": "^2",
+    "@tauri-apps/plugin-fs": "^2",
+    "@tauri-apps/plugin-opener": "^2",
+    "brotli-wasm": "^3.0.1",
+    "qrcode": "^1.5.4",
+    "zxing-wasm": "^2.0.0"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2",
+    "@types/qrcode": "^1.5.5",
+    "typescript": "~5.6.2",
+    "vite": "^6.0.3"
+  }
+}

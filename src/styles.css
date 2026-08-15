@@ -1,0 +1,326 @@
+/* ---- Light / blue theme ----------------------------------------------
+   White background, black body text, blue tabs & buttons with white text,
+   and clearly-bordered QR and camera boxes. */
+
+:root {
+  --bg: #ffffff;
+  --text: #111827; /* near-black body text on white */
+  --muted: #374151; /* secondary text, still dark for readability */
+  --blue: #1565c0;
+  --blue-light: #42a5f5;
+  --blue-dark: #0d47a1;
+  --border: #cbd5e1;
+  --card: #f1f5f9;
+  --track: #e5e7eb;
+  --ok: #2e7d32;
+}
+
+* {
+  box-sizing: border-box;
+}
+/* Kill mobile pull-to-refresh and the rubber-band / overscroll bounce so a
+   downward swipe never reloads the app or drags the whole page. (No overflow-x
+   clamp here — it turns html+body into nested scroll containers that can trap
+   vertical scrolling, e.g. a tall QR on the phone sender.) */
+html,
+body {
+  overscroll-behavior: none;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 8px 20px;
+  min-height: 100vh;
+}
+header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+h1 {
+  font-size: 16px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text);
+  margin: 0;
+  text-align: center;
+}
+h1 small {
+  color: var(--muted);
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: normal;
+}
+/* Mobile only (body.mobile set from the user agent): buffer the title below the
+   phone's camera / status-bar. Uses the OS-reported safe-area inset, with a
+   minimum so there's always a gap even when the inset reports 0. Desktop is
+   unaffected. */
+body.mobile h1 {
+  margin-top: max(env(safe-area-inset-top, 0px), 28px);
+}
+/* …and buffer the bottom above Android's navigation bar (the 3-button/gesture
+   strip) so the last line of text isn't hidden behind it. Same idea as the top:
+   OS-reported inset with a minimum. Desktop is unaffected. */
+body.mobile {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 56px);
+}
+.hint {
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+  max-width: 640px;
+}
+a {
+  color: var(--blue);
+}
+
+/* ---- tabs: a soft light-blue connected strip (easy on the eyes), with the
+   selected tab a paler "faded" blue carrying a white stripe along its bottom ---- */
+.tabs {
+  display: flex;
+  width: 100%;
+  gap: 0; /* no gaps — the tabs form a single joined bar, not separate buttons */
+  background: #d6e8fb; /* light blue strip */
+  border-radius: 10px 10px 0 0;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(21, 101, 192, 0.12);
+}
+.tab {
+  flex: 1;
+  font: inherit;
+  color: #43648c; /* muted blue-gray text on light blue — inactive */
+  background: transparent;
+  border: 0;
+  border-bottom: 4px solid transparent; /* reserves the indicator height */
+  padding: 14px 20px;
+  cursor: pointer;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 13px;
+  font-weight: 700;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+.tab + .tab {
+  border-left: 1px solid rgba(21, 101, 192, 0.12); /* subtle divider between tabs */
+}
+.tab:hover {
+  color: var(--blue-dark);
+  background: rgba(255, 255, 255, 0.45);
+}
+.tab.active {
+  color: var(--blue-dark); /* selected tab: dark-blue bold text, easy to read… */
+  background: #eef5ff; /* …on a paler faded blue… */
+  border-bottom-color: var(--blue-dark); /* …with a darker-blue stripe along the bottom */
+}
+
+/* ---- panels ---- */
+.panel {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+}
+.panel.active {
+  display: flex;
+}
+
+/* ---- buttons ---- */
+button.primary {
+  font: inherit;
+  color: #ffffff;
+  background: var(--blue);
+  border: 0;
+  border-radius: 8px;
+  padding: 14px 36px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+}
+button.primary:hover {
+  background: var(--blue-dark);
+}
+button.primary:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+button.secondary {
+  font: inherit;
+  color: var(--blue);
+  background: #ffffff;
+  border: 2px solid var(--blue);
+  border-radius: 8px;
+  padding: 12px 32px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+button.secondary:hover {
+  color: #ffffff;
+  background: var(--blue);
+}
+
+/* ---- QR stage: white with a clear blue border ---- */
+.stage {
+  background: #ffffff;
+  padding: 6px;
+  border: 3px solid var(--blue);
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(21, 101, 192, 0.15);
+}
+.stage canvas {
+  display: block;
+  image-rendering: pixelated;
+}
+
+/* ---- camera preview: clearly bordered box, sized from JS ---- */
+.preview {
+  position: relative;
+  width: min(92vw, 480px); /* fallback; JS sizes it from the window */
+  border: 3px solid var(--blue);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 2px 10px rgba(21, 101, 192, 0.15);
+}
+.preview video {
+  width: 100%;
+  display: block;
+}
+
+/* ---- progress ---- */
+.progress {
+  width: min(92vw, 480px);
+  height: 14px;
+  background: var(--track);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  overflow: hidden;
+}
+.progress > div {
+  height: 100%;
+  width: 0;
+  background: var(--blue);
+  transition: width 0.25s;
+}
+
+/* ---- result ---- */
+.done {
+  color: var(--ok);
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+}
+.saved-path {
+  color: var(--muted);
+  font-size: 12px;
+  word-break: break-all;
+  text-align: center;
+  max-width: min(92vw, 640px);
+}
+.native-log {
+  width: min(92vw, 640px);
+  max-height: 180px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 8px 10px;
+  background: #0b1020;
+  color: #9fe0a0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font: 11px/1.5 ui-monospace, Menlo, Consolas, monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+  text-align: left;
+}
+#result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+img.received {
+  max-width: min(92vw, 640px);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+/* ---- settings ---- */
+details.settings {
+  width: min(92vw, 640px);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+details.settings summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+details.settings .row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  padding-top: 10px;
+}
+details.settings label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+details.settings select,
+details.settings input[type="range"] {
+  font: inherit;
+  color: var(--text);
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 8px;
+}
+
+/* ---- metrics ---- */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 8px;
+  width: min(92vw, 640px);
+}
+.metric {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+.metric .k {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.metric .v {
+  font-size: 16px;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.metric .v.amber {
+  color: var(--blue);
+}
+.metric .v.ok {
+  color: var(--ok);
+}

@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Opfer — Optical File Transfer</title>
+    <script type="module" crossorigin src="/assets/index-DWbfsjUP.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BAI5uojB.css">
+  </head>
+  <body>
+    <header>
+      <h1>OPFER <small>— Optical File Transfer</small></h1>
+      <nav class="tabs" id="tabs">
+        <button class="tab active" data-tab="send">Send</button>
+        <button class="tab" data-tab="receive">Receive</button>
+      </nav>
+    </header>
+
+    <!-- ============================ SEND ============================ -->
+    <section class="panel active" id="panel-send">
+      <!-- Native WebView picker used on Android (the Tauri dialog bridge is
+           unreliable there); hidden, triggered programmatically. -->
+      <input id="hidden-file-input" type="file" style="display: none" />
+      <button id="pick" class="primary">Choose file to send…</button>
+      <button id="clear" class="secondary" style="display: none">Clear</button>
+      <div class="hint" id="send-status">Pick any file — it streams as animated QR codes.</div>
+
+      <details class="settings">
+        <summary>Settings</summary>
+        <div class="row">
+          <label>
+            tx fps
+            <select id="cfg-fps">
+              <option>10</option>
+              <option>15</option>
+              <option>20</option>
+              <option>24</option>
+              <option>30</option>
+              <option selected>60</option>
+            </select>
+          </label>
+          <label>
+            bytes / frame
+            <select id="cfg-bytes">
+              <option>500</option>
+              <option>1000</option>
+              <option selected>1465</option>
+              <option>1850</option>
+              <option>2331</option>
+              <option>2953</option>
+            </select>
+          </label>
+          <label>
+            error correction
+            <select id="cfg-ecc">
+              <option selected>L</option>
+              <option>M</option>
+              <option>Q</option>
+              <option>H</option>
+            </select>
+          </label>
+          <label>
+            codes (grid)
+            <select id="cfg-grid">
+              <option>1</option>
+              <option selected>2</option>
+              <option>3</option>
+            </select>
+          </label>
+          <label>
+            compression
+            <select id="cfg-compress">
+              <option value="gzip" selected>gzip</option>
+              <option value="brotli">brotli</option>
+              <option value="off">off</option>
+            </select>
+          </label>
+          <label style="display: none">
+            color layers ×3
+            <select id="cfg-color">
+              <option selected>off</option>
+              <option>on</option>
+            </select>
+          </label>
+          <label>
+            max display size
+            <input id="cfg-size" type="range" min="300" max="2000" step="50" value="2000" />
+          </label>
+        </div>
+        <div class="hint" style="text-align: left; padding-top: 8px">
+          Changes restart the stream. The receiver resets automatically off the
+          new session id in the frame headers.
+        </div>
+      </details>
+
+      <div class="stage" id="send-stage" style="display: none">
+        <canvas id="qr" width="16" height="16"></canvas>
+      </div>
+      <div class="hint">Max screen brightness helps. The stream loops forever — stop when the receiver says done.</div>
+    </section>
+
+    <!-- ========================== RECEIVE ========================== -->
+    <section class="panel" id="panel-receive">
+      <div class="hint" id="recv-status">Point the camera at the sender's flickering code.</div>
+
+      <details class="settings" id="recv-settings">
+        <summary>Settings</summary>
+        <div class="row">
+          <label>
+            capture width
+            <select id="cfg-width">
+              <option>960</option>
+              <option>1280</option>
+              <option>1920</option>
+              <option selected>2560</option>
+              <option>3840</option>
+            </select>
+          </label>
+          <label>
+            capture fps
+            <select id="cfg-capfps">
+              <option>30</option>
+              <option selected>60</option>
+            </select>
+          </label>
+          <label>
+            decode workers
+            <select id="cfg-workers">
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+              <option selected>6</option>
+              <option>8</option>
+              <option>10</option>
+              <option>12</option>
+              <option>16</option>
+            </select>
+          </label>
+          <label style="display: none">
+            color decode
+            <select id="cfg-color-decode">
+              <option selected>off</option>
+              <option>on</option>
+            </select>
+          </label>
+          <label>
+            fast decode
+            <select id="cfg-fast">
+              <option selected>auto</option>
+              <option>off</option>
+              <option>on</option>
+            </select>
+          </label>
+          <label>
+            native camera
+            <select id="cfg-native">
+              <option selected>off</option>
+              <option>on</option>
+            </select>
+          </label>
+          <label>
+            native grid (match sender)
+            <select id="cfg-native-grid">
+              <option>1</option>
+              <option selected>2</option>
+              <option>3</option>
+            </select>
+          </label>
+          <label>
+            lock focus/exposure
+            <select id="cfg-native-lock">
+              <option selected>on</option>
+              <option>off</option>
+            </select>
+          </label>
+          <label>
+            exposure (EV)
+            <select id="cfg-native-ev">
+              <option value="auto">auto</option>
+              <option value="0">0</option>
+              <option value="-1">-1.0</option>
+              <option value="-1.5" selected>-1.5</option>
+              <option value="-2">-2.0</option>
+              <option value="-2.5">-2.5</option>
+            </select>
+          </label>
+          <label>
+            sharpen
+            <select id="cfg-native-sharpen">
+              <option selected>off</option>
+              <option>on</option>
+            </select>
+          </label>
+        </div>
+        <div class="hint" style="text-align: left; padding-top: 8px">
+          Set before starting the camera. Hold the phone steady (or prop it) —
+          autofocus hunting from hand tremor is the #1 throughput killer.
+        </div>
+      </details>
+
+      <button id="start" class="primary">Start camera</button>
+      <button id="stop" class="secondary" style="display: none">Stop camera</button>
+
+      <div class="metrics" id="metrics" style="display: none">
+        <div class="metric"><div class="k">capture fps</div><div class="v" id="m-cap">—</div></div>
+        <div class="metric"><div class="k">decode fps</div><div class="v amber" id="m-dec">—</div></div>
+        <div class="metric"><div class="k">goodput</div><div class="v amber" id="m-rate">—</div></div>
+        <div class="metric"><div class="k">elapsed</div><div class="v" id="m-time">—</div></div>
+        <div class="metric"><div class="k">frames new/dup</div><div class="v" id="m-frames">—</div></div>
+        <div class="metric"><div class="k">blocks K</div><div class="v" id="m-k">—</div></div>
+        <div class="metric"><div class="k">block len</div><div class="v" id="m-block">—</div></div>
+        <div class="metric"><div class="k">file</div><div class="v" id="m-payload">—</div></div>
+        <div class="metric" style="display:none;"><div class="k">decode ms</div><div class="v amber" id="m-declat">—</div></div>
+        <div class="metric"><div class="k">frames dropped</div><div class="v amber" id="m-drop">—</div></div>
+        <div class="metric" style="display:none;"><div class="k">capture path</div><div class="v" id="m-path">—</div></div>
+      </div>
+
+      <div class="progress" id="progress" style="display: none"><div id="bar"></div></div>
+      <div class="preview" id="preview" style="display: none">
+        <video id="video" muted playsinline></video>
+        <canvas id="native-preview" style="display: none; width: 100%; height: auto"></canvas>
+      </div>
+      <div class="hint" id="fps-hint" style="display: none; color: var(--blue-dark); font-weight: 700">
+        Camera is capturing below 30 fps and nothing is decoding — try lowering the
+        sender's <b>tx fps</b> to 24 so each code stays on screen long enough to catch.
+      </div>
+      <pre class="native-log" id="native-log" style="display: none"></pre>
+      <div id="result"></div>
+    </section>
+
+  </body>
+</html>
